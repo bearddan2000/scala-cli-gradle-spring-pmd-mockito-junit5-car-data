@@ -1,0 +1,72 @@
+/*
+    gradle clean build bootRun
+*/
+
+buildscript {
+  repositories { jcenter() }
+  dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:2.4.2" }
+}
+
+plugins {
+  id 'com.github.ben-manes.versions' version '0.13.0' // gradle dependencyUpdates
+  id 'pmd'
+}
+
+apply plugin: 'scala'
+
+targetCompatibility = sourceCompatibility = JavaVersion.VERSION_1_8
+
+group = group
+
+jar {
+  version = version
+  baseName = baseName
+}
+
+repositories {
+  jcenter()
+  mavenCentral()
+}
+
+
+
+test {
+    reports {
+        html.enabled = true
+    }
+
+    // Enable JUnit 5 (Gradle 4.6+).
+    useJUnitPlatform()
+
+    // Always run tests, even when nothing changed.
+    //dependsOn 'cleanTest'
+
+    // Show test results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+
+dependencies {
+  implementation "org.scala-lang:scala-library:2.12.10"
+  implementation "org.springframework:spring-context:5.0.1.RELEASE"
+
+  testImplementation "org.mockito:mockito-core:3.+"
+  testImplementation 'org.mockito:mockito-junit-jupiter:2.23.0'
+  testImplementation "org.springframework:spring-test:5.0.1.RELEASE"
+  testImplementation platform("org.junit:junit-bom:5.8.1")
+  testImplementation 'org.junit.platform:junit-platform-suite'
+  testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+// Configure PMD.
+pmd {
+    ignoreFailures = true
+    toolVersion = "6.23.0"                             // The version of PMD to use.
+    ruleSetFiles = files("config/pmd/pmd.xml")         // The location of the configuration file.
+    ruleSets = []                                      // Ignore the default rules. The ones this config
+                                                       // uses are set with the ruleSetFiles property.
+}
+
+defaultTasks "clean", "build"
